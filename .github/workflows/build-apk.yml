@@ -1,4 +1,4 @@
-name: Build ScanTrad APK
+name: Build ScanTrad Clean APK
 
 on:
   push:
@@ -33,20 +33,28 @@ jobs:
         with:
           gradle-version: '8.13'
 
-      - name: Extract ScanTrad
-        run: unzip -q ScanTrad_0.3.zip -d source
+      - name: Pick newest clean source
+        shell: bash
+        run: |
+          ZIP=$(find . -maxdepth 1 -type f -name 'ScanTrad_Clean_*.zip' | sort -V | tail -n 1)
+          test -n "$ZIP" || (echo "No ScanTrad_Clean_*.zip found" && exit 1)
+          echo "SOURCE_ZIP=$ZIP" >> "$GITHUB_ENV"
+          echo "Using $ZIP"
+
+      - name: Extract source
+        run: unzip -q "$SOURCE_ZIP" -d source
 
       - name: Build APK
-        working-directory: source/ScanTrad
+        working-directory: source/ScanTradClean
         run: gradle :app:assembleDebug --stacktrace
 
       - name: Prepare APK
-        run: cp source/ScanTrad/app/build/outputs/apk/debug/app-debug.apk ScanTrad.apk
+        run: cp source/ScanTradClean/app/build/outputs/apk/debug/app-debug.apk ScanTrad-Clean.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: ScanTrad-APK
-          path: ScanTrad.apk
+          name: ScanTrad-Clean-APK
+          path: ScanTrad-Clean.apk
           if-no-files-found: error
           retention-days: 30
