@@ -34,7 +34,7 @@ jobs:
           gradle-version: '8.13'
 
       - name: Extract ScanTrad
-        run: unzip -q ScanTrad_0.1.zip -d source
+        run: unzip -q ScanTrad_0.3.zip -d source
 
       - name: Build APK
         working-directory: source/ScanTrad
